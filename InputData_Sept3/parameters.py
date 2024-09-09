@@ -1,7 +1,7 @@
 # Parameters that likely change between different data sets
 
 input_directory = 'InputData_Sept3'  # Replace with your directory path
-output_directory = 'OutputData_Sept3_trials'  # Replace with your directory path
+output_directory = 'OutputData_Sept3'  # Replace with your directory path
 start_time = '2024-09-03 21:26:00'
 end_time = '2024-09-03 22:45:00'
 cuttoff_speed_MPH = 5.0
