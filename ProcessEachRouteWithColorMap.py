@@ -1,3 +1,8 @@
+"""
+This script processes each route file in the input directory and creates a color-coded map of the route with temperature data.
+
+
+"""
 import pandas as pd
 import numpy as np
 import folium
@@ -12,10 +17,12 @@ import branca.colormap as cm
 from MyRemoteSQL import sql_connection
 
 """
+Properties of the pandas dataframes used in this script:
+
 df_step1 =  Data after removal of rows with missing data 
             df.dropna(subset=['rtcTime', 'gps_Lat', 'gps_Long', 'degC', 'gps_GroundSpeed'])
 
-df_step2 = Remove rows with speed below 10 mph
+df_step2 = Remove rows with speed below specified speed in MPH in parameters.py 
             df_step1[df_step1['gps_GroundSpeed'] >= 4470.4]  # 4470.4 mm/sec is equivalent to 10 mph
 
 df_step3 =  set the sample time window
@@ -424,4 +431,6 @@ if __name__ == "__main__":
         input_directory = sys.argv[1]
         main_process(input_directory)
     else:
-        print("Provide input_directory as a command-line argument.")
+        print("")
+        print("  Provide input_directory as a command-line argument.")
+        print("  Example: python ProcessEachRouteWithColorMap.py  InputData_Sept3")
