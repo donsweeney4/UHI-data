@@ -122,10 +122,11 @@ def main_process(input_directory):
 
     print(f"\n There are {len(os.listdir(directory))} files in the directory {directory}")
     for filename in os.listdir(directory):
-        if filename.endswith(".TXT"):   
+        if filename.lower().endswith(".txt"):
+   
             print(f"\n\n ================================") 
             print(f"\n Processing file {filename}") 
-            i += 1  # Increment the .TXT file index number
+            i += 1  # Increment the data file index number
             file_path = os.path.join(directory, filename)
 
             # Read the CSV file
