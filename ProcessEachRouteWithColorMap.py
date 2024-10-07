@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import branca.colormap as cm
 from MyRemoteSQL import sql_connection
+import importlib.util
 
 """
 Properties of the pandas dataframes used in this script:
@@ -38,6 +39,26 @@ df_step7 =  [SAVED FILE] same as df_step5 but with reduced columns -> gps_Lat, g
 
 
  """  
+
+
+def import_parameters(input_directory):
+    module_name = "parameters"
+    module_path = os.path.join(input_directory, f"{module_name}.py")
+    
+    if os.path.isfile(module_path):
+        spec = importlib.util.spec_from_file_location(module_name, module_path)
+        parameters = importlib.util.module_from_spec(spec)
+        sys.modules[module_name] = parameters  # Update sys.modules with the new module
+        spec.loader.exec_module(parameters)  # Load the module
+        print(f"Module 'parameters' loaded from {module_path}")
+        return parameters
+    else:
+        print(f"No parameters.py found in {input_directory}")
+        return None
+
+# Example usage:
+#parameters_module_1 = import_parameters('/path/to/directory1')
+#parameters_module_2 = import_parameters('/path/to/directory2')
 
 
 def validate_and_convert(row):
@@ -67,27 +88,28 @@ def main_process(input_directory):
 ##################### Input Parameters ##################################################
 ##########################################################################################
 
+    parameters = import_parameters(input_directory)
     
-    # Dynamically add input_directory to sys.path
-    sys.path.append(input_directory)
-    import parameters as p
+    if parameters is None:
+        print("Failed to load parameters. Exiting.")
+        return
 
 # Define the time window for the data
-    input_directory = p.input_directory # Replace with your directory path
-    output_directory = p.output_directory # Replace with your directory path
-    start_time = p.start_time
-    end_time =  p.end_time
-    cuttoff_speed_MPH = p.cuttoff_speed_MPH 
-    temperature_drift = p.temperature_drift   #  Adjust temperature drift over time  
-    color_coded_temperature_map =  p.color_coded_temperature_map
-    color_coded_route_map =  p.color_coded_route_map
-    temperature_map_TimeWindow =  p.temperature_map_TimeWindow
-    temperature_map_entireTime = p.temperature_map_entireTime
-    solid_color_by_route = p.solid_color_by_route
-    color_table_min = p.color_table_min
-    color_table_max = p.color_table_max
-    combined_data =  p.combined_data
-    combined_data_reduced_columns =  p.combined_data_reduced_columns
+    input_directory = parameters.input_directory # Replace with your directory path
+    output_directory = parameters.output_directory # Replace with your directory path
+    start_time = parameters.start_time
+    end_time =  parameters.end_time
+    cuttoff_speed_MPH = parameters.cuttoff_speed_MPH 
+    temperature_drift = parameters.temperature_drift   #  Adjust temperature drift over time  
+    color_coded_temperature_map =  parameters.color_coded_temperature_map
+    color_coded_route_map =  parameters.color_coded_route_map
+    temperature_map_TimeWindow =  parameters.temperature_map_TimeWindow
+    temperature_map_entireTime = parameters.temperature_map_entireTime
+    solid_color_by_route = parameters.solid_color_by_route
+    color_table_min = parameters.color_table_min
+    color_table_max = parameters.color_table_max
+    combined_data =  parameters.combined_data
+    combined_data_reduced_columns =  parameters.combined_data_reduced_columns
  
 ##########################################################################################
 ##########################################################################################
@@ -99,6 +121,9 @@ def main_process(input_directory):
     timestamp_start = pd.to_datetime(start_time)
     timestamp_end = pd.to_datetime(end_time)
     solid_color_list = ['red', 'blue', 'green', 'purple', 'orange', 'darkred', 'lightred', 'beige', 'darkblue', 'darkgreen']
+
+    print(f"\n   input_directory: {input_directory} \n   output_directory: {output_directory} \n   start_time: {start_time} \n   end_time: {end_time} \n   cuttoff_speed_MPH: {cuttoff_speed_MPH} \n   temperature_drift: {temperature_drift} \n   color_coded_temperature_map: {color_coded_temperature_map} \n   color_coded_route_map: {color_coded_route_map} \n   temperature_map_TimeWindow: {temperature_map_TimeWindow} \n   temperature_map_entireTime: {temperature_map_entireTime} \n   solid_color_by_route: {solid_color_by_route} \n   color_table_min: {color_table_min} \n   color_table_max: {color_table_max} \n   combined_data: {combined_data} \n   combined_data_reduced_columns: {combined_data_reduced_columns} \n")    
+
     ##########################################################################################
 
 
@@ -376,6 +401,8 @@ def main_process(input_directory):
         filename  = './'+output_directory+'/'+color_coded_route_map
     else:
         filename  = './'+output_directory+'/'+color_coded_temperature_map
+        print(f"\n\n\ color temperature filename: {filename}")
+
     m.save(filename)
     print(f"\n\n Map has been created and saved as {filename}\n\n")
 
@@ -430,6 +457,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         # Get the command-line argument
         input_directory = sys.argv[1]
+        print(f"\n\n  input_directory with paramters: {input_directory}")  
         main_process(input_directory)
     else:
         print("")
