@@ -198,6 +198,7 @@ def main_process(input_directory):
                 print(f" \n\n timestamp_start: {timestamp_start} \n timestamp_end: {timestamp_end}_\n")
 
                 # Convert the 'timestamp' column to datetime
+                df_step2 = df_step2.copy()    
                 df_step2['timestamp'] = pd.to_datetime(df_step2['timestamp'])
                 print(f" \n\n   Head of df_step2 after converting timestamp to datetime format  \n   {df_step2.head(10)}_")
 
@@ -248,10 +249,11 @@ def main_process(input_directory):
 
 # Define the colormap for the temperature values
 
-    if color_table_max == 0.0 or  color_table_min == 0.0:
+    if color_table_max == 0.0 :
         color_table_max = math.ceil(df_step5['corrected_temperature'].max())
+    if color_table_min == 0.0:        
         color_table_min  = math.floor(df_step5['corrected_temperature'].min())
-        print(f"\n\n  color_table_max: {color_table_max}  color_table_min: {color_table_min}")
+    print(f"\n\n  color_table_max: {color_table_max}  color_table_min: {color_table_min}")
     dtemp= (color_table_max - color_table_min)/3
     index = [color_table_min, color_table_min+dtemp,color_table_min + 2 * dtemp , color_table_max] 
     print(f"\n\n  index: {index}")
@@ -273,8 +275,8 @@ def main_process(input_directory):
     groups = []  # Initialize as a list
     jj = 0
 
-    for filename in os.listdir(directory):
-        if filename.endswith(".TXT"):
+    for filename in os.listdir(directory):  
+        if filename.lower().endswith(".txt"):
             # Define each group as a set of circles for each file
             group = folium.FeatureGroup(name=filename, show=True)  # show=True makes it visible initially
             for idc, row in df_step5.iterrows():
