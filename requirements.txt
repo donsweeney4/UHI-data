@@ -12,3 +12,5 @@ branca.colormap
 mysql.connector
 mysql.connector 
 pykrige.ok 
+sklearn.linear_model
+  
