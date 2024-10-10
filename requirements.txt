@@ -4,5 +4,6 @@ folium
 plotly.express  
 matplotlib.colors  
 mysql.connector
+pip install scikit-learn
 
   
