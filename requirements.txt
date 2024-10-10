@@ -1,16 +1,8 @@
 pandas  
 numpy  
 folium
-sys
-os
-math
 plotly.express  
-plotly.io  
-matplotlib.pyplot 
 matplotlib.colors  
-branca.colormap 
 mysql.connector
-mysql.connector 
-pykrige.ok 
-sklearn.linear_model
+
   
