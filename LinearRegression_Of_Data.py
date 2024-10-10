@@ -2,17 +2,27 @@ import pandas as pd
 from datetime import datetime
 from sklearn.linear_model import LinearRegression
 import numpy as np
+import pytz  # For timezone handling
 
-def fit_temperature(csv_input_file, start_time, end_time):
+def fit_temperature(csv_input_file, start_time, end_time, timezone='UTC'):
     # Read the CSV file
     df = pd.read_csv(csv_input_file)
+
+    # Define the timezone
+    tz = pytz.timezone(timezone)
 
     # Combine 'rtcDate' and 'rtcTime' into a single datetime column
     df['datetime'] = pd.to_datetime(df['rtcDate'] + ' ' + df['rtcTime'])
 
-    # Convert the start_time and end_time input strings to datetime objects
-    start_time_dt = pd.to_datetime(start_time, format='%m/%d/%Y %H:%M:%S')
-    end_time_dt = pd.to_datetime(end_time, format='%m/%d/%Y %H:%M:%S')
+    # If the 'datetime' column is already tz-aware, use tz_convert; otherwise, use tz_localize
+    if pd.api.types.is_datetime64tz_dtype(df['datetime']):
+        df['datetime'] = df['datetime'].dt.tz_convert(tz)
+    else:
+        df['datetime'] = df['datetime'].dt.tz_localize(tz)
+
+    # Convert the start_time and end_time input strings to timezone-aware datetime objects
+    start_time_dt = pd.to_datetime(start_time, format='%m/%d/%Y %H:%M:%S').tz_localize(tz)
+    end_time_dt = pd.to_datetime(end_time, format='%m/%d/%Y %H:%M:%S').tz_localize(tz)
 
     # Filter the dataframe to include only rows between start_time and end_time
     df_filtered = df[(df['datetime'] >= start_time_dt) & (df['datetime'] <= end_time_dt)]
@@ -39,8 +49,8 @@ def fit_temperature(csv_input_file, start_time, end_time):
     print(f"Slope of the linear fit: {slope} degrees per second")
 
 # Example usage
-csv_input_file = 'your_file.csv'  # replace with the actual file path
-start_time = '10/01/2024 08:00:00'  # Example start time
-end_time = '10/01/2024 12:00:00'  # Example end time
+csv_input_file = '.\OutputData_Afternoon_Oct6\combined_data.csv'  # replace with the actual file path
+start_time = '10/06/2024 16:32:00'  # Example start time
+end_time = '10/06/2024 17:52:00'  # Example end time
 
 fit_temperature(csv_input_file, start_time, end_time)
