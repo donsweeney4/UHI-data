@@ -106,8 +106,8 @@ def main_process(input_directory):
     temperature_map_TimeWindow =  parameters.temperature_map_TimeWindow
     temperature_map_entireTime = parameters.temperature_map_entireTime
     solid_color_by_route = parameters.solid_color_by_route
-    color_table_min = parameters.color_table_min
-    color_table_max = parameters.color_table_max
+    color_table_min_quantile = parameters.color_table_min_quantile
+    color_table_max_quantile = parameters.color_table_max_quantile
     combined_data =  parameters.combined_data
     combined_data_reduced_columns =  parameters.combined_data_reduced_columns
  
@@ -122,7 +122,23 @@ def main_process(input_directory):
     timestamp_end = pd.to_datetime(end_time)
     solid_color_list = ['red', 'blue', 'green', 'purple', 'orange', 'darkred', 'lightred', 'beige', 'darkblue', 'darkgreen']
 
-    print(f"\n   input_directory: {input_directory} \n   output_directory: {output_directory} \n   start_time: {start_time} \n   end_time: {end_time} \n   cuttoff_speed_MPH: {cuttoff_speed_MPH} \n   temperature_drift: {temperature_drift} \n   color_coded_temperature_map: {color_coded_temperature_map} \n   color_coded_route_map: {color_coded_route_map} \n   temperature_map_TimeWindow: {temperature_map_TimeWindow} \n   temperature_map_entireTime: {temperature_map_entireTime} \n   solid_color_by_route: {solid_color_by_route} \n   color_table_min: {color_table_min} \n   color_table_max: {color_table_max} \n   combined_data: {combined_data} \n   combined_data_reduced_columns: {combined_data_reduced_columns} \n")    
+    print(f"""
+    input_directory: {input_directory}
+    output_directory: {output_directory}
+    start_time: {start_time}
+    end_time: {end_time}
+    cuttoff_speed_MPH: {cuttoff_speed_MPH}
+    temperature_drift: {temperature_drift}
+    color_coded_temperature_map: {color_coded_temperature_map}
+    color_coded_route_map: {color_coded_route_map}
+    temperature_map_TimeWindow: {temperature_map_TimeWindow}
+    temperature_map_entireTime: {temperature_map_entireTime}
+    solid_color_by_route: {solid_color_by_route}
+    color_table_min_quantile: {color_table_min_quantile}
+    color_table_max_quantile: {color_table_max_quantile}
+    combined_data: {combined_data}
+    combined_data_reduced_columns: {combined_data_reduced_columns}
+    """)
 
     ##########################################################################################
 
@@ -249,10 +265,14 @@ def main_process(input_directory):
 
 # Define the colormap for the temperature values
 
-    if color_table_max == 0.0 :
-        color_table_max = math.ceil(df_step5['corrected_temperature'].max())
-    if color_table_min == 0.0:        
-        color_table_min  = math.floor(df_step5['corrected_temperature'].min())
+    #if color_table_max == 0.0 :
+    #    color_table_max = math.ceil(df_step5['corrected_temperature'].max())
+    #if color_table_min == 0.0:        
+    #    color_table_min  = math.floor(df_step5['corrected_temperature'].min())
+
+    color_table_min = np.percentile(df_step5['corrected_temperature'], color_table_min_quantile)
+    color_table_max = np.percentile(df_step5['corrected_temperature'], color_table_max_quantile)
+
     print(f"\n\n  color_table_max: {color_table_max}  color_table_min: {color_table_min}")
     dtemp= (color_table_max - color_table_min)/3
     index = [color_table_min, color_table_min+dtemp,color_table_min + 2 * dtemp , color_table_max] 
